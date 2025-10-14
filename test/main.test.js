@@ -3,7 +3,8 @@ var parser = require(__dirname + '/../lib');
 
 var internals = {};
 
-var {expect} = require('@jest/globals')
+var {expect} = require('@jest/globals');
+const { toJson } = require('../lib');
 
 describe('xml2json', function () {
 
@@ -315,8 +316,16 @@ describe('json2xml', function () {
     });
 });
 
+test('does not lose text nodes', () => {
+  const xmlStr = `<foo attr=\"value\">bar<subnode val=\"test\" >glass</subnode></foo>`
+  const result = toJson(xmlStr, {object: true, reversible: true})
+  const expected = {"foo":{"attr":"value","$t":"bar","subnode":{"val":"test","$t":"glass"}}} 
+
+  expect(result).toMatchObject(expected)
+})
 
 internals.readFixture = function (file) {
 
     return fs.readFileSync(__dirname + '/fixtures/' + file, { encoding: 'utf-8' });
 };
+
