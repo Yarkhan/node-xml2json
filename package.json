@@ -9,7 +9,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "joi": "^13.7.0",
     "node-expat": "^2.4.1"
   },
   "bin": {

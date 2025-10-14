@@ -4,7 +4,7 @@ var parser = require(__dirname + '/../lib');
 var internals = {};
 
 var {expect} = require('@jest/globals');
-const { toJson } = require('../lib');
+const { toJson, toXml } = require('../lib');
 
 describe('xml2json', function () {
 
@@ -322,6 +322,13 @@ test('does not lose text nodes', () => {
   const expected = {"foo":{"attr":"value","$t":"bar","subnode":{"val":"test","$t":"glass"}}} 
 
   expect(result).toMatchObject(expected)
+})
+
+test('correctly reverses using alternateTextNode', () => {
+  const xmlStr = `<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>`
+  const json = toJson(xmlStr, {object: true, reversible: true, alternateTextNode: '___test'})
+  const xml = toXml(json, {textNode: '___test'})
+  expect(xmlStr).toEqual(xml)
 })
 
 internals.readFixture = function (file) {
