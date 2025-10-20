@@ -1,6 +1,6 @@
 var fs = require('fs');
 var parser = require('../lib');
-var { test, expect } = require('@jest/globals')
+import { test, expect } from 'vitest'
 
 test('sanitize', () => {
   

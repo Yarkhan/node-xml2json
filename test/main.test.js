@@ -1,10 +1,12 @@
 var fs = require('fs');
-var parser = require(__dirname + '/../lib');
+
+import parser from '../lib'
 
 var internals = {};
 
-var {expect} = require('@jest/globals');
-const { toJson, toXml } = require('../lib');
+import { expect, describe, it, test } from 'vitest'
+const { toJson, toXml } = parser
+
 
 describe('xml2json', function () {
 
@@ -17,7 +19,7 @@ describe('xml2json', function () {
         expect(result).toEqual(json);
 
         return Promise.resolve();
-    });
+    })
 
     it('coerces', function () {
 

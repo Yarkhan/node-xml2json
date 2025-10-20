@@ -6,7 +6,7 @@ var result = parser.toXml(data);
 
 var expected = fs.readFileSync('./test/fixtures/reorder.xml') + '';
 
-var { test, expect } = require('@jest/globals')
+import { test, expect } from 'vitest'
 
 if (expected) {
     expected = expected.trim();
