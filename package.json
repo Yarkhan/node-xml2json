@@ -9,14 +9,15 @@
     "test": "vitest"
   },
   "dependencies": {
-    "jsdom": "^27.0.1",
     "node-expat": "^2.4.1"
   },
   "bin": {
     "xml2json": "bin/xml2json"
   },
   "devDependencies": {
+    "eslint": "^9.38.0",
     "jest": "^30.2.0",
+    "neostandard": "^0.12.2",
     "vitest": "^3.2.4"
   }
 }
