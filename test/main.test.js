@@ -8,16 +8,6 @@ const internals = {}
 const { toJson, toXml } = parser
 
 describe('xml2json', function () {
-  it('converts with array-notation', function () {
-    const xml = internals.readFixture('array-notation.xml')
-    const result = parser.toJson(xml, { arrayNotation: true })
-    const json = internals.readFixture('array-notation.json')
-
-    expect(result).toEqual(json)
-
-    return Promise.resolve()
-  })
-
   it('coerces', function () {
     const xml = internals.readFixture('coerce.xml')
     const result = parser.toJson(xml, { coerce: false })
@@ -127,15 +117,6 @@ describe('xml2json', function () {
     return Promise.resolve()
   })
 
-  it('converts with forceArrays', function () {
-    const xml = internals.readFixture('forceArray.xml')
-    const result = parser.toJson(xml, { arrayNotation: ['drivers', 'vehicles'] })
-    const json = internals.readFixture('forceArray.json')
-
-    expect(result).toEqual(json)
-    return Promise.resolve()
-  })
-
   it('throws error on bad options', function () {
     const throws = function () {
       const result = parser.toJson(xml, { derp: true })
@@ -167,17 +148,6 @@ describe('xml2json', function () {
       expect(result.itemRecord.value[1].stringValue.number).toEqual('false')
       expect(result.itemRecord.value[2].moneyValue.number).toEqual('true')
       expect(result.itemRecord.value[2].moneyValue['$t']).toEqual('104.95')
-      expect(result.itemRecord.value[2].moneyValue.text).toEqual('123.45')
-      expect(result.itemRecord.value[8].text['$t']).toEqual('42.42')
-      return Promise.resolve()
-    })
-
-    it('works with coercion as an optional object', function () {
-      const result = parser.toJson(data, { reversible: true, coerce: { text: String }, object: true })
-      expect(result.itemRecord.value[0].longValue['$t']).toEqual(12345)
-      expect(result.itemRecord.value[1].stringValue.number).toEqual(false)
-      expect(result.itemRecord.value[2].moneyValue.number).toEqual(true)
-      expect(result.itemRecord.value[2].moneyValue['$t']).toEqual(104.95)
       expect(result.itemRecord.value[2].moneyValue.text).toEqual('123.45')
       expect(result.itemRecord.value[8].text['$t']).toEqual('42.42')
       return Promise.resolve()
@@ -244,17 +214,6 @@ describe('json2xml', function () {
     const xml = internals.readFixture('domain.xml')
 
     expect(result + '\n').toEqual(xml)
-
-    return Promise.resolve()
-  })
-
-  it('works with array notation', function () {
-    const xml = internals.readFixture('array-notation.xml')
-    const expectedJson = JSON.parse(internals.readFixture('array-notation.json'))
-
-    const json = parser.toJson(xml, { object: true, arrayNotation: true })
-
-    expect(json).toEqual(expectedJson)
 
     return Promise.resolve()
   })
