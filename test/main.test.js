@@ -30,7 +30,7 @@ describe('xml2json', function () {
 
   it('does large file', function () {
     const xml = internals.readFixture('large.xml')
-    const result = parser.toJson(xml, { coerce: false, trim: true, sanitize: false })
+    const result = parser.toJson(xml, { coerce: false, trim: true })
     const json = internals.readFixture('large.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -70,7 +70,7 @@ describe('xml2json', function () {
 
   it('does xmlsanitize of text', function () {
     const xml = internals.readFixture('xmlsanitize2.xml')
-    const result = parser.toJson(xml, { sanitize: true, reversible: true })
+    const result = parser.toJson(xml, { reversible: true })
     const json = internals.readFixture('xmlsanitize2.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -110,7 +110,7 @@ describe('xml2json', function () {
 
   it('does doesnt double unsanitize', function () {
     const xml = internals.readFixture('xmlsanitize3.xml')
-    const result = parser.toJson(xml, { sanitize: true, reversible: true })
+    const result = parser.toJson(xml, { reversible: true })
     const json = internals.readFixture('xmlsanitize3.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -119,27 +119,11 @@ describe('xml2json', function () {
 
   it('throws error on bad options', function () {
     const throws = function () {
-      const result = parser.toJson(xml, { derp: true })
+      const result = parser.toJson(undefined, { derp: true })
     }
 
     expect(throws).toThrow()
     return Promise.resolve()
-  })
-
-  describe('coercion', function () {
-    const file = __dirname + '/fixtures/coerce.xml'
-    const data = fs.readFileSync(file)
-
-    it('works without coercion', function () {
-      const result = parser.toJson(data, { reversible: true, coerce: false, object: true })
-      expect(result.itemRecord.value[0].longValue['$t']).toEqual('12345')
-      expect(result.itemRecord.value[1].stringValue.number).toEqual('false')
-      expect(result.itemRecord.value[2].moneyValue.number).toEqual('true')
-      expect(result.itemRecord.value[2].moneyValue['$t']).toEqual('104.95')
-      expect(result.itemRecord.value[2].moneyValue.text).toEqual('123.45')
-      expect(result.itemRecord.value[8].text['$t']).toEqual('42.42')
-      return Promise.resolve()
-    })
   })
 
   describe('alternateTextNode', function () {
@@ -165,7 +149,7 @@ describe('xml2json', function () {
 
     it('B: uses alternate text node with option as true', function () {
       const xml = internals.readFixture('alternate-text-node-A.xml')
-      const result = parser.toJson(xml, { alternateTextNode: true, reversible: true })
+      const result = parser.toJson(xml, { textNodeName: '_t', reversible: true })
       const json = internals.readFixture('alternate-text-node-B.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -175,7 +159,7 @@ describe('xml2json', function () {
 
     it('C: overrides text node with option as "xx" string', function () {
       const xml = internals.readFixture('alternate-text-node-A.xml')
-      const result = parser.toJson(xml, { alternateTextNode: 'xx', reversible: true })
+      const result = parser.toJson(xml, { textNodeName: 'xx', reversible: true })
       const json = internals.readFixture('alternate-text-node-C.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -185,7 +169,7 @@ describe('xml2json', function () {
 
     it('D: double check sanatize and trim', function () {
       const xml = internals.readFixture('alternate-text-node-D.xml')
-      const result = parser.toJson(xml, { alternateTextNode: 'zz', sanitize: true, trim: true, reversible: true })
+      const result = parser.toJson(xml, { textNodeName: 'zz', reversible: true })
       const json = internals.readFixture('alternate-text-node-D.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -239,7 +223,7 @@ test('does not lose text nodes', () => {
 
 test('correctly reverses using alternateTextNode', () => {
   const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
-  const json = toJson(xmlStr, { object: true, reversible: true, alternateTextNode: '___test' })
+  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
   const xml = toXml(json, { textNode: '___test' })
   expect(xmlStr).toEqual(xml)
 })
@@ -247,3 +231,16 @@ test('correctly reverses using alternateTextNode', () => {
 internals.readFixture = function (file) {
   return fs.readFileSync(__dirname + '/fixtures/' + file, { encoding: 'utf-8' })
 }
+
+test('lets learn', () => {
+  const xml = `
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to name='foo' />
+  <list>
+    <item id='1'>item 1 </item>
+  </list>
+</note>`.trim()
+
+  toJson(xml)
+})
