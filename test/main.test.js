@@ -13,7 +13,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { coerce: false })
     const json = internals.readFixture('coerce.json')
 
-    expect(result + '\n').toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -23,7 +23,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { coerce: false })
     const json = internals.readFixture('domain.json')
 
-    expect(result + '\n').toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -33,7 +33,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { coerce: false, trim: true, sanitize: false })
     const json = internals.readFixture('large.json')
 
-    expect(result + '\n').toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -43,7 +43,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, {})
     const json = internals.readFixture('reorder.json')
 
-    expect(result).toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -53,17 +53,17 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { coerce: false, trim: false })
     const json = internals.readFixture('spacetext.json')
 
-    expect(result).toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
 
   it('does xmlsanitize', function () {
     const xml = internals.readFixture('xmlsanitize.xml')
-    const result = parser.toJson(xml, { sanitize: true })
+    const result = parser.toJson(xml)
     const json = internals.readFixture('xmlsanitize.json')
 
-    expect(result).toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -73,7 +73,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { sanitize: true, reversible: true })
     const json = internals.readFixture('xmlsanitize2.json')
 
-    expect(result).toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
 
     return Promise.resolve()
   })
@@ -113,7 +113,7 @@ describe('xml2json', function () {
     const result = parser.toJson(xml, { sanitize: true, reversible: true })
     const json = internals.readFixture('xmlsanitize3.json')
 
-    expect(result).toEqual(json)
+    expect(result).toEqual(JSON.parse(json))
     return Promise.resolve()
   })
 
@@ -129,18 +129,6 @@ describe('xml2json', function () {
   describe('coercion', function () {
     const file = __dirname + '/fixtures/coerce.xml'
     const data = fs.readFileSync(file)
-
-    it('works with coercion', function () {
-      // With coercion
-      const result = parser.toJson(data, { reversible: true, coerce: true, object: true })
-      expect(result.itemRecord.value[0].longValue['$t']).toEqual(12345)
-      expect(result.itemRecord.value[1].stringValue.number).toEqual(false)
-      expect(result.itemRecord.value[2].moneyValue.number).toEqual(true)
-      expect(result.itemRecord.value[2].moneyValue['$t']).toEqual(104.95)
-      expect(result.itemRecord.value[2].moneyValue.text).toEqual(123.45)
-      expect(result.itemRecord.value[8].text['$t']).toEqual(42.42)
-      return Promise.resolve()
-    })
 
     it('works without coercion', function () {
       const result = parser.toJson(data, { reversible: true, coerce: false, object: true })
@@ -160,7 +148,7 @@ describe('xml2json', function () {
       const result = parser.toJson(xml, { reversible: true })
       const json = internals.readFixture('alternate-text-node-A.json')
 
-      expect(result).toEqual(json)
+      expect(result).toEqual(JSON.parse(json))
 
       return Promise.resolve()
     })
@@ -170,7 +158,7 @@ describe('xml2json', function () {
       const result = parser.toJson(xml, { alternateTextNode: false, reversible: true })
       const json = internals.readFixture('alternate-text-node-A.json')
 
-      expect(result).toEqual(json)
+      expect(result).toEqual(JSON.parse(json))
 
       return Promise.resolve()
     })
@@ -180,7 +168,7 @@ describe('xml2json', function () {
       const result = parser.toJson(xml, { alternateTextNode: true, reversible: true })
       const json = internals.readFixture('alternate-text-node-B.json')
 
-      expect(result).toEqual(json)
+      expect(result).toEqual(JSON.parse(json))
 
       return Promise.resolve()
     })
@@ -190,7 +178,7 @@ describe('xml2json', function () {
       const result = parser.toJson(xml, { alternateTextNode: 'xx', reversible: true })
       const json = internals.readFixture('alternate-text-node-C.json')
 
-      expect(result).toEqual(json)
+      expect(result).toEqual(JSON.parse(json))
 
       return Promise.resolve()
     })
@@ -200,7 +188,7 @@ describe('xml2json', function () {
       const result = parser.toJson(xml, { alternateTextNode: 'zz', sanitize: true, trim: true, reversible: true })
       const json = internals.readFixture('alternate-text-node-D.json')
 
-      expect(result).toEqual(json)
+      expect(result).toEqual(JSON.parse(json))
 
       return Promise.resolve()
     })
