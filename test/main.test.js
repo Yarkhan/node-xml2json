@@ -1,6 +1,7 @@
 import parser from '../lib'
 
-import { expect, describe, it, test } from 'vitest'
+import { expect, describe, it, test, bench } from 'vitest'
+import objToXml from '../lib/obj2xml'
 
 const fs = require('fs')
 
@@ -232,15 +233,25 @@ internals.readFixture = function (file) {
   return fs.readFileSync(__dirname + '/fixtures/' + file, { encoding: 'utf-8' })
 }
 
-test('lets learn', () => {
-  const xml = `
-<?xml version="1.0" encoding="UTF-8"?>
-<note>
-  <to name='foo' />
-  <list>
-    <item id='1'>item 1 </item>
-  </list>
-</note>`.trim()
+test('new toxml function', () => {
+  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
+  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
+  const xml = toXml(json, { textNode: '___test' })
+  const xml2 = objToXml({ textNode: '___test' }, json)
+  expect(xmlStr).toEqual(xml)
+  expect(xmlStr).toEqual(xml2)
+})
 
-  toJson(xml)
+bench('xml1', () => {
+  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
+  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
+  const xml = toXml(json, { textNode: '___test' })
+  // const xml2 = objToXml({ textNode: '___test' }, json)
+})
+
+bench('xml2', () => {
+  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
+  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
+  // const xml = toXml(json, { textNode: '___test' })
+  const xml2 = objToXml({ textNode: '___test' }, json)
 })
