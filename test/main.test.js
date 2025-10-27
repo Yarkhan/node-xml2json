@@ -241,17 +241,3 @@ test('new toxml function', () => {
   expect(xmlStr).toEqual(xml)
   expect(xmlStr).toEqual(xml2)
 })
-
-bench('xml1', () => {
-  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
-  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
-  const xml = toXml(json, { textNode: '___test' })
-  // const xml2 = objToXml({ textNode: '___test' }, json)
-})
-
-bench('xml2', () => {
-  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
-  const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
-  // const xml = toXml(json, { textNode: '___test' })
-  const xml2 = objToXml({ textNode: '___test' }, json)
-})
