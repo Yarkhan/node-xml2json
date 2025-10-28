@@ -10,12 +10,12 @@ const { toJson, toXml } = parser
 
 
 const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\">glass</subnode></foo>'
-const json = toJson(xmlStr, { object: true, reversible: true, textNodeName: '___test' })
+const json = toJson(xmlStr, { reversible: true, textNodeName: '___test' })
 
 bench('xml1', () => {
   const xml = toXml(json, { textNode: '___test' })
 })
 
 bench('xml2', () => {
-  const xml2 = objToXml({ textNode: '___test' }, json)
+  const xml2 = objToXml(json, { textNode: '___test' })
 })
