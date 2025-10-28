@@ -40,21 +40,20 @@ const charsAttrEscape = {
   "'": '&apos;'
 }
 
-function escapeRegExp (string) {
-  return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1')
+function escapeRegExp (string: string) {
+  return string.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
 }
 
 // sanitize body text
-exports.sanitize = function sanitize (value, reverse, attribute) {
+exports.sanitize = function sanitize (value: any, reverse: any, attribute: any) {
   if (typeof value !== 'string') {
     return value
   }
 
   const chars = reverse ? charsUnescape : (attribute ? charsAttrEscape : charsEscape)
-  const keys = Object.keys(chars)
 
-  keys.forEach(function (key) {
-    value = value.replace(new RegExp(escapeRegExp(key), 'g'), chars[key])
+  Object.entries(chars).forEach(([key, val]) => {
+    value = value.replace(new RegExp(escapeRegExp(key), 'g'), val)
   })
 
   return value

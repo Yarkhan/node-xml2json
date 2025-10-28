@@ -1,10 +1,10 @@
 import { test, expect } from 'vitest'
 
 import fs from 'fs'
-import parser from '../lib'
+import toXml from '../lib/obj2xml'
 
-const data = fs.readFileSync('./test/fixtures/reorder.json')
-const result = parser.toXml(data)
+const data = JSON.parse(fs.readFileSync('./test/fixtures/reorder.json', 'utf-8'))
+const result = toXml(data)
 
 let expected = fs.readFileSync('./test/fixtures/reorder.xml') + ''
 

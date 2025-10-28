@@ -1,5 +1,5 @@
 import toJson from './xml2json'
-import toXml from './json2xml'
+import toXml from './obj2xml'
 
 export default {
   toJson, toXml

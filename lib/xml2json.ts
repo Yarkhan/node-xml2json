@@ -1,6 +1,6 @@
 import expat from 'node-expat'
 
-const onStartElement = (state, name, attrs) => {
+const onStartElement = (state: { options?: { reversible: boolean; trim: boolean; textNodeName: string }; currentElementName: any; currentObject: any; ancestors: any }, name: string | number, attrs: any) => {
   const currentObject = state.currentObject
   state.currentElementName = name
 
@@ -21,12 +21,12 @@ const onStartElement = (state, name, attrs) => {
     : currentObject[name]
 }
 
-const onText = (data, state) => {
+const onText = (data: any, state: { options: any; currentElementName?: null; currentObject: any; ancestors?: never[] }) => {
   const { currentObject, options: { textNodeName } } = state
   currentObject[textNodeName] = (currentObject[textNodeName] || '') + data
 }
 
-const onEndElement = (state, name) => {
+const onEndElement = (state: { options: any; currentElementName?: any; currentObject: any; ancestors?: any }, name: string | number) => {
   const { currentObject, options: { textNodeName } } = state
 
   if (currentObject[textNodeName]) {
@@ -76,7 +76,13 @@ const defaultOptions = {
   textNodeName: '$t'
 }
 
-const toJSON = (xml, _options = defaultOptions) => {
+interface toJsonOptions {
+  reversible?: boolean
+  trim?: boolean
+  textNodeName?: string
+}
+
+const toJSON = (xml = '', _options: toJsonOptions = {}) => {
   _options = _options || {}
   const parser = new expat.Parser('UTF-8')
 

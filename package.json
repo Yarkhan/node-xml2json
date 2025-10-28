@@ -11,10 +11,8 @@
   "dependencies": {
     "node-expat": "^2.4.1"
   },
-  "bin": {
-    "xml2json": "bin/xml2json"
-  },
   "devDependencies": {
+    "@types/node-expat": "^2.3.5",
     "eslint": "^9.38.0",
     "jest": "^30.2.0",
     "neostandard": "^0.12.2",

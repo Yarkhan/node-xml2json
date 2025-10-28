@@ -4,7 +4,7 @@ import { expect, describe, test } from 'vitest'
 
 const fs = require('fs')
 
-const readFixture = (file, parseObj = false) => {
+const readFixture = (file = '', parseObj = false) => {
   const _file = fs.readFileSync(__dirname + '/fixtures/' + file, { encoding: 'utf-8' })
   if (parseObj) return JSON.parse(_file)
   return _file
@@ -13,7 +13,7 @@ const readFixture = (file, parseObj = false) => {
 describe('xml2json', function () {
   test('coerces', function () {
     const xml = readFixture('coerce.xml')
-    const result = toJson(xml, { coerce: false })
+    const result = toJson(xml)
     const json = readFixture('coerce.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -23,7 +23,7 @@ describe('xml2json', function () {
 
   test('handles domain', function () {
     const xml = readFixture('domain.xml')
-    const result = toJson(xml, { coerce: false })
+    const result = toJson(xml)
     const json = readFixture('domain.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -33,7 +33,7 @@ describe('xml2json', function () {
 
   test('does large file', function () {
     const xml = readFixture('large.xml')
-    const result = toJson(xml, { coerce: false, trim: true })
+    const result = toJson(xml, { trim: true })
     const json = readFixture('large.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -53,7 +53,7 @@ describe('xml2json', function () {
 
   test('handles text with space', function () {
     const xml = readFixture('spacetext.xml')
-    const result = toJson(xml, { coerce: false, trim: false })
+    const result = toJson(xml, { trim: false })
     const json = readFixture('spacetext.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -90,16 +90,7 @@ describe('xml2json', function () {
     return Promise.resolve()
   })
 
-  test('throws error on bad options', function () {
-    const throws = function () {
-      const result = toJson(undefined, { derp: true })
-    }
-
-    expect(throws).toThrow()
-    return Promise.resolve()
-  })
-
-  describe('alternateTextNode', function () {
+  describe('textNode', function () {
     test('A1: defaults without the option being defined', function () {
       const xml = readFixture('alternate-text-node-A.xml')
       const result = toJson(xml, { reversible: true })
@@ -112,7 +103,7 @@ describe('xml2json', function () {
 
     test('A2: defaults with option as false', function () {
       const xml = readFixture('alternate-text-node-A.xml')
-      const result = toJson(xml, { alternateTextNode: false, reversible: true })
+      const result = toJson(xml, { reversible: true })
       const json = readFixture('alternate-text-node-A.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -154,7 +145,7 @@ describe('xml2json', function () {
 
 test('does not lose text nodes', () => {
   const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\" >glass</subnode></foo>'
-  const result = toJson(xmlStr, { object: true, reversible: true })
+  const result = toJson(xmlStr, { reversible: true })
   const expected = { foo: { attr: 'value', $t: 'bar', subnode: { val: 'test', $t: 'glass' } } }
 
   expect(result).toMatchObject(expected)
