@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import fs from 'fs'
-import objToXml from '../lib/obj2xml'
-import toJson from '../lib/xml2json'
+import objToXml from '../src/obj2xml'
+import toJson from '../src/xml2json'
 import path from 'path'
 const readFixture = (file: string, parseObj = false) => {
   const _file = fs.readFileSync(path.join(__dirname, '/fixtures/', file), { encoding: 'utf-8' })

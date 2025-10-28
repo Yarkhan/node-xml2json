@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
 import fs from 'fs'
-import parser from '../lib'
+import parser from '../src'
 import path from 'path'
 
 test('sanitize', () => {

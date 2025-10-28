@@ -1,11 +1,12 @@
-import toJson from '../lib/xml2json'
+import toJson from '../src/xml2json'
 
 import { expect, describe, test } from 'vitest'
 
-const fs = require('fs')
+import fs from 'fs'
+import path from 'path'
 
 const readFixture = (file = '', parseObj = false) => {
-  const _file = fs.readFileSync(__dirname + '/fixtures/' + file, { encoding: 'utf-8' })
+  const _file = fs.readFileSync(path.join(__dirname, '/fixtures/', file), { encoding: 'utf-8' })
   if (parseObj) return JSON.parse(_file)
   return _file
 }
