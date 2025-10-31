@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import fs from 'fs'
 import objToXml from '../src/obj2xml'
-import toJson from '../src/xml2json'
+import toJson from '../src/xml2obj'
 import path from 'path'
 const readFixture = (file: string, parseObj = false) => {
   const _file = fs.readFileSync(path.join(__dirname, '/fixtures/', file), { encoding: 'utf-8' })
@@ -67,7 +67,7 @@ test('correctly reverses using alternateTextNode', () => {
   const xmlStr = '<foo attr="value">bar<subnode val="test">glass</subnode></foo>'
   const json = toJson(xmlStr, {
     reversible: true,
-    textNodeName: '___test',
+    textNode: '___test',
     trim: false
   })
   const xml = objToXml(json, { textNode: '___test' })

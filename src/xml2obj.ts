@@ -1,28 +1,15 @@
 import expat from 'node-expat'
 
-/**
- * Parses xml to json using node-expat.
- * @param {String|Buffer} xml The xml to be parsed to json.
- * @param {Object} _options An object with options provided by the user.
- * The available options are:
- *  - reversible: If true, the parser generates a reversible JSON, mainly
- *                characterized by the presence of the property $t.
- *  - textNodeName: defaults to $t.
- *
- * @return {String|Object} A String or an Object with the JSON representation
- * of the XML.
- */
-
-const defaultOptions = {
-  reversible: false,
-  trim: true,
-  textNodeName: '$t'
-}
-
 interface toJsonOptions {
   reversible?: boolean
   trim?: boolean
-  textNodeName?: string
+  textNode?: string
+}
+
+const defaultOptions = {
+  reversible: true,
+  trim: true,
+  textNode: '$t'
 }
 
 function unwrap (obj: any, key: string): any {
@@ -41,6 +28,7 @@ function unwrap (obj: any, key: string): any {
       obj[_key] = unwrap(obj[_key], key)
     }
   }
+
   return obj
 }
 
@@ -54,7 +42,7 @@ const toJSON = (xml = '', _options: toJsonOptions = {}) => {
     ..._options
   }
 
-  const textNodeName = options.textNodeName
+  const textNodeName = options.textNode
 
   const root:any = {}
 
@@ -103,7 +91,7 @@ const toJSON = (xml = '', _options: toJsonOptions = {}) => {
     throw new Error('There are errors in your xml file: ' + parser.getError())
   }
 
-  if (!options.reversible) unwrap(current, options.textNodeName)
+  if (!options.reversible) unwrap(current, options.textNode)
 
   return root
 }

@@ -1,4 +1,4 @@
-import toJson from '../src/xml2json'
+import toJson from '../src/xml2obj'
 
 import { expect, describe, test } from 'vitest'
 
@@ -14,7 +14,7 @@ const readFixture = (file = '', parseObj = false) => {
 describe('xml2json', function () {
   test('coerces', function () {
     const xml = readFixture('coerce.xml')
-    const result = toJson(xml)
+    const result = toJson(xml, { reversible: false })
     const json = readFixture('coerce.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -24,7 +24,7 @@ describe('xml2json', function () {
 
   test('handles domain', function () {
     const xml = readFixture('domain.xml')
-    const result = toJson(xml)
+    const result = toJson(xml, { reversible: false })
     const json = readFixture('domain.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -34,7 +34,7 @@ describe('xml2json', function () {
 
   test('does large file', function () {
     const xml = readFixture('large.xml')
-    const result = toJson(xml, { trim: true })
+    const result = toJson(xml, { trim: true, reversible: false })
     const json = readFixture('large.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -54,7 +54,7 @@ describe('xml2json', function () {
 
   test('handles text with space', function () {
     const xml = readFixture('spacetext.xml')
-    const result = toJson(xml, { trim: false })
+    const result = toJson(xml, { trim: false, textNode: '$t', reversible: false })
     const json = readFixture('spacetext.json')
 
     expect(result).toEqual(JSON.parse(json))
@@ -114,7 +114,7 @@ describe('xml2json', function () {
 
     test('B: uses alternate text node with option as true', function () {
       const xml = readFixture('alternate-text-node-A.xml')
-      const result = toJson(xml, { textNodeName: '_t', reversible: true })
+      const result = toJson(xml, { textNode: '_t', reversible: true })
       const json = readFixture('alternate-text-node-B.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -124,7 +124,7 @@ describe('xml2json', function () {
 
     test('C: overrides text node with option as "xx" string', function () {
       const xml = readFixture('alternate-text-node-A.xml')
-      const result = toJson(xml, { textNodeName: 'xx', reversible: true })
+      const result = toJson(xml, { textNode: 'xx', reversible: true })
       const json = readFixture('alternate-text-node-C.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -134,7 +134,7 @@ describe('xml2json', function () {
 
     test('D: double check sanatize and trim', function () {
       const xml = readFixture('alternate-text-node-D.xml')
-      const result = toJson(xml, { textNodeName: 'zz', reversible: true })
+      const result = toJson(xml, { textNode: 'zz', reversible: true })
       const json = readFixture('alternate-text-node-D.json')
 
       expect(result).toEqual(JSON.parse(json))
@@ -145,7 +145,7 @@ describe('xml2json', function () {
 })
 
 test('does not lose text nodes', () => {
-  const xmlStr = '<foo attr=\"value\">bar<subnode val=\"test\" >glass</subnode></foo>'
+  const xmlStr = '<foo attr="value">bar<subnode val="test" >glass</subnode></foo>'
   const result = toJson(xmlStr, { reversible: true })
   const expected = { foo: { attr: 'value', $t: 'bar', subnode: { val: 'test', $t: 'glass' } } }
 
