@@ -44,8 +44,7 @@ function escapeRegExp (string: string) {
   return string.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1')
 }
 
-// sanitize body text
-exports.sanitize = function sanitize (value: any, reverse: any, attribute: any) {
+export default function sanitize (value: any, reverse?: any, attribute?: any) {
   if (typeof value !== 'string') {
     return value
   }
