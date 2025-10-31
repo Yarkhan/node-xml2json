@@ -1,62 +1,5 @@
 import expat from 'node-expat'
 
-const onStartElement = (state: { options?: { reversible: boolean; trim: boolean; textNodeName: string }; currentElementName: any; currentObject: any; ancestors: any }, name: string | number, attrs: any) => {
-  const currentObject = state.currentObject
-  state.currentElementName = name
-
-  if (!currentObject[name]) {
-    currentObject[name] = attrs
-  } else {
-    if (!Array.isArray(currentObject[name])) {
-      currentObject[name] = [currentObject[name]]
-    }
-    currentObject[name].push(attrs)
-  }
-
-  // Store the current (old) parent.
-  state.ancestors.push(currentObject)
-
-  state.currentObject = Array.isArray(currentObject[name])
-    ? currentObject[name].at(-1)
-    : currentObject[name]
-}
-
-const onText = (data: any, state: { options: any; currentElementName?: null; currentObject: any; ancestors?: never[] }) => {
-  const { currentObject, options: { textNodeName } } = state
-  currentObject[textNodeName] = (currentObject[textNodeName] || '') + data
-}
-
-const onEndElement = (state: { options: any; currentElementName?: any; currentObject: any; ancestors?: any }, name: string | number) => {
-  const { currentObject, options: { textNodeName } } = state
-
-  if (currentObject[textNodeName]) {
-    if (state.options.trim) {
-      state.currentObject[textNodeName] = currentObject[textNodeName].trim()
-    }
-  }
-
-  if (state.currentElementName !== name) {
-    const current = currentObject[state.options.textNodeName]
-    if (current === undefined || state.currentObject[state.options.textNodeName].trim() === '') {
-      delete state.currentObject[state.options.textNodeName]
-    }
-  }
-
-  const ancestor = state.ancestors.pop()
-
-  if (!state.options.reversible) {
-    if ((state.options.textNodeName in state.currentObject) && (Object.keys(state.currentObject).length === 1)) {
-      if (Array.isArray(ancestor[name])) {
-        ancestor[name].push(ancestor[name].pop()[state.options.textNodeName])
-      } else {
-        ancestor[name] = state.currentObject[state.options.textNodeName]
-      }
-    }
-  }
-
-  state.currentObject = ancestor
-}
-
 /**
  * Parses xml to json using node-expat.
  * @param {String|Buffer} xml The xml to be parsed to json.
@@ -82,29 +25,87 @@ interface toJsonOptions {
   textNodeName?: string
 }
 
-const toJSON = (xml = '', _options: toJsonOptions = {}) => {
-  _options = _options || {}
-  const parser = new expat.Parser('UTF-8')
+function unwrap (obj: any, key: string): any {
+  if (obj === null || typeof obj !== 'object') return obj
 
-  const state = {
-    options: {
-      ...defaultOptions,
-      ..._options
-    },
-    currentElementName: null,
-    currentObject: {},
-    ancestors: []
+  if (!Array.isArray(obj) && Object.keys(obj).length === 1 && key in obj) {
+    return unwrap(obj[key], key)
   }
 
-  parser.on('startElement', (name, args) => onStartElement(state, name, args))
-  parser.on('text', data => onText(data, state))
-  parser.on('endElement', (name) => onEndElement(state, name))
+  if (Array.isArray(obj)) {
+    return obj.map(item => unwrap(item, key))
+  }
+
+  for (const _key in obj) {
+    if (typeof obj[_key] === 'object') {
+      obj[_key] = unwrap(obj[_key], key)
+    }
+  }
+  return obj
+}
+
+const toJSON = (xml = '', _options: toJsonOptions = {}) => {
+  _options = _options || {}
+
+  const parser = new expat.Parser('UTF-8')
+
+  const options = {
+    ...defaultOptions,
+    ..._options
+  }
+
+  const textNodeName = options.textNodeName
+
+  const root:any = {}
+
+  const stack = [] as { parent: any, name: string }[]
+
+  let current = root
+
+  parser.on('startElement', (name, attrs: any) => {
+    if (!(name in current)) {
+      current[name] = attrs
+    } else {
+      if (!Array.isArray(current[name])) {
+        current[name] = [current[name]]
+      }
+      current[name].push(attrs)
+    }
+
+    stack.push({ parent: current, name })
+
+    current = attrs
+  })
+
+  parser.on('text', data => {
+    current[textNodeName] = (current[textNodeName] || '') + data
+  })
+
+  parser.on('endElement', (name) => {
+    if (textNodeName in current && options.trim) {
+      current[textNodeName] = current[textNodeName].trim()
+    }
+
+    const isEmpty = current[textNodeName]?.trim() === ''
+
+    const hasChildren = Object.keys(current).some(key => {
+      if (key === textNodeName) return false
+      const v = current[key]
+      return typeof v === 'object' && v !== null
+    })
+
+    if (isEmpty && hasChildren) delete current[textNodeName]
+
+    current = stack.pop()?.parent
+  })
 
   if (!parser.parse(xml)) {
     throw new Error('There are errors in your xml file: ' + parser.getError())
   }
 
-  return state.currentObject
+  if (!options.reversible) unwrap(current, options.textNodeName)
+
+  return root
 }
 
 export default toJSON

@@ -1,5 +1,5 @@
 const fs = require('fs')
-const parser = require('../src')
+const parser = require('../lib')
 
 const file = __dirname + '/fixtures/large.xml'
 

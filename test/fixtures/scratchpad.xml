@@ -1,0 +1,5 @@
+<tag id="1">
+  <emptytag></emptytag>
+  <emptytagwithspace> </emptytagwithspace>
+  <othertag>inner text</othertag>
+</tag>
