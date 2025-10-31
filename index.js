@@ -1,5 +1,5 @@
-import toJson from './src/xml2obj'
-import toXml from './src/obj2xml'
+import toJson from './dist/xml2obj'
+import toXml from './dist/obj2xml'
 
 export {
   toJson, toXml
