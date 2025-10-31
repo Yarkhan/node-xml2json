@@ -32,7 +32,7 @@ function unwrap (obj: any, key: string): any {
   return obj
 }
 
-const toJSON = (xml = '', _options: toJsonOptions = {}) => {
+const toJson = (xml = '', _options: toJsonOptions = {}) => {
   _options = _options || {}
 
   const parser = new expat.Parser('UTF-8')
@@ -96,4 +96,4 @@ const toJSON = (xml = '', _options: toJsonOptions = {}) => {
   return root
 }
 
-export default toJSON
+export default toJson
